@@ -12,9 +12,9 @@
     - name: Ensure demo application is at correct release.
       git:
         repo: https://github.com/antoniovelazquezbarroso/myticketee_mysql.git
-        # version: "{{ app_version }}" # To choose version repository to checkout
-                                      # (can be a branch name, tag name or SHA-1 hash)
-                                      # defaults to the literal string HEAD 
+        version: mysql_Ubuntu1404 # To choose version repository to checkout
+                                       # (can be a branch name, tag name or SHA-1 hash)
+                                       # defaults to the literal string HEAD 
         dest: "{{ app_directory }}"
         accept_hostkey: true
         force: yes
