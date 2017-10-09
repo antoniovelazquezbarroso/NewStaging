@@ -14,7 +14,9 @@
   when: ansible_os_family == 'Debian'
 
 - name: Get NRPE
-  get_url: url={{ nrpeurl }} dest={{ download_dir }}/{{ nrpesrc }}.tar.gz
+  get_url: url={{ nrpeurl }} dest={{ download_dir }}/{{ nrpesrc }}.tar.gz validate_certs=no
+  # ATENCIÓN : ESTE CAMBIO (AÑADIR validate_certs=no) SE HACE DIRECTAMENTE EN EL ROLE. CUIDADO EN REINSTALACIONES.
+  # SIRVE PARA EVITAR UN ERROR OCASIONAL AL EJECUTAR EL PLAYBOOK CON ESTE ROLE
 
 - name: Unpack NRPE source files
   shell: cd {{ download_dir }} && tar -xzvf {{ nrpesrc }}.tar.gz creates={{ download_dir }}/{{ nrpesrc }}

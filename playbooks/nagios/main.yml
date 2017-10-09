@@ -13,6 +13,10 @@
   roles:
     - networklore.nagios
     - networklore.nrpe-client
+      # ATENCIÓN. ESTE ROLE LLEVA UN CAMBIO PARA EVITAR UN ERROR OCASIONAL AL EJECUTAR EL PLAYBOOK.
+      # ESTE CAMBIO (AÑADIR validate_certs=no EN LA TAREA "Get NRPE") SE HACE DIRECTAMENTE SOBRE EL ROLE.
+      # CUIDADO EN REINSTALACIONES DE ROLE REQUIREMENTS, SE PIERDE ESTE CAMBIO.
+      # VER roles/networklore.nrpe-client/tasks/main.yml, LINEA 17.
 
   tasks:
 # Add nagios.cfg, nagios main configuration file
