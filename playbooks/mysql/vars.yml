@@ -1,7 +1,7 @@
 ---
 mysql_replication_user: {name: 'replication', password: 'secret'}
 mysql_databases:
-  - name: myticketee_production
+  - name: railsapp_production
     collation: utf8_general_ci
     encoding: utf8
 
