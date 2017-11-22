@@ -1,5 +1,5 @@
 ---
-- hosts: monitor
+- hosts: monitoring
   gather_facts: yes
   become: yes
 

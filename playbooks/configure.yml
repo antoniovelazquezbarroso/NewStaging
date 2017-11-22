@@ -1,7 +1,5 @@
 ---
-- include: munin/main.yml
-- include: nagios/main.yml
-- include: elk/main.yml
+- include: monitoring/main.yml
+- include: monitored/main.yml
 - include: mysql/main.yml
-- include: any/main.yml
 - include: deploy_app/simple_deploy/main.yml

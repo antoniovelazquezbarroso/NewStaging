@@ -1,11 +1,19 @@
-[monitor]
-192.168.2.75
-
-[db]
-192.168.2.80
-192.168.2.75
+#[web]
+#192.168.2.51
 
 [app]
-192.168.2.80
+192.168.2.51 
+#192.168.2.61
+
+[db]
+192.168.2.51 mysql_replication_role=master mysql_server_id=1
+192.168.2.41 mysql_replication_role=slave mysql_server_id=2
+
+[monitoring]
+192.168.2.41
+
+[monitored]
+192.168.2.51
+#192.168.2.61
 
 

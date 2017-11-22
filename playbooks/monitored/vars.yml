@@ -2,7 +2,7 @@
 # ======================================================================
 #Variables for munin-node configuration
 munin_node_allowed_ips:
-  - '^192\.168\.2\.75$'
+  - '^192\.168\.2\.41$'
   - '^::1$'
 
 # List of munin plugins to enable in any monitored host.
@@ -28,7 +28,7 @@ munin_node_config: {
 
 # ======================================================================
 # Variables for nagios-nrpe-server configuration
-nagios_nrpe_server_allowed_hosts: 192.168.2.75
+nagios_nrpe_server_allowed_hosts: 192.168.2.41
 
 
 # For fine-grained group-based plugin configuration of nagios-nrpe-server
@@ -39,7 +39,7 @@ nagios_nrpe_server_allowed_hosts: 192.168.2.75
 # Variables for filebeat configuration
 filebeat_output_logstash_enabled: true
 filebeat_output_logstash_hosts:
-  - "192.168.2.75:5400"
+  - "192.168.2.41:5400"
 
 filebeat_prospectors:
   - paths:

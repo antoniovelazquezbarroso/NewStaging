@@ -19,10 +19,20 @@ munin_hosts:
     extra: ["use_node_name yes"]
   }
   - {
-    name: "app",
-    address: "192.168.2.80",
+    name: "VM51",
+    address: "192.168.2.51",
     extra: ["use_node_name yes"]
-  }  
+  } 
+  - {
+    name: "VM61",
+    address: "192.168.2.61",
+    extra: ["use_node_name yes"]
+  }
+# - {
+#   name: "VM71",
+#   address: "192.168.2.71",
+#   extra: ["use_node_name yes"]
+#  }
 
 # Variables for munin-node configuration
 # For localhost the allowed-IP is set by default

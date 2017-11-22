@@ -39,11 +39,18 @@
       when: app_updated.changed == true
       notify: restart nginx
 
-    - name: Perform deployment-related rake tasks.
+    - name: Perform deployment-related database rake tasks (ONLY ONCE PER APP SERVER GROUP).
       shell: "{{ item }} chdir={{ app_directory }}"
       with_items:
         - bundle exec rake db:migrate
         - bundle exec rake db:seed
+      environment: "{{app_environment}}"
+      when: app_updated.changed == true and inventory_hostname == groups.app[0]
+      notify: restart nginx
+
+    - name: Perform deployment-related assets rake tasks (ON EACH APP SERVER// PENDING CORREGIR).
+      shell: "{{ item }} chdir={{ app_directory }}"
+      with_items:
         - bundle exec rake assets:precompile
       environment: "{{app_environment}}"
       when: app_updated.changed == true

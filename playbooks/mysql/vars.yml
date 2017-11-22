@@ -4,7 +4,6 @@ mysql_databases:
   - name: railsapp_production
     collation: utf8_general_ci
     encoding: utf8
-
 # Variables to config mysql replication and mysql logging
 # are defined in .yml files named after each host
 # in the hosts_vars folder placed alongside the inventory file
