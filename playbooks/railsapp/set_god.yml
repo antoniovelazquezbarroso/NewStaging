@@ -1,0 +1,35 @@
+---
+# THESE TASKS ARE INCLUDED IN THE deploy.yml PLAYBOOK
+# THEY SET THE GOD GEM, CONFIG AND UPSTART FILES   
+- name: Ensure God gem present at Gemfile
+  lineinfile:
+    path: "{{ app_directory }}/Gemfile"
+    regexp: "gem 'god', group: :production"
+    line: " gem 'god', group: :production"
+    state: present
+    insertafter : "gem 'puma', group: :production"
+
+- name: Ensure god.rb configuration and god upstart files are present.
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0664
+  with_items:
+    - {
+      src: templates/config-god.rb.j2,
+      dest: "{{ app_directory }}/config/god.rb"
+    }
+    - {
+      src: templates/init-god.conf.j2,
+      dest: /etc/init/god.conf
+    }
+  
+- name: Add sudo group rights for deployment user over god program call (God Upstart needs root privileges)
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "{{ app_user }}"
+    line: "{{ app_user }} ALL=(ALL) NOPASSWD: {{ app_directory }}/vendor/bundle/ruby/2.2.0/gems/god-0.13.7/bin/god"
+    state: present
+    

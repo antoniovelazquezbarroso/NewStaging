@@ -1,0 +1,4 @@
+---
+# Variables for Nginx configuration
+# (ONLY NEEDED IF USING ROLE TO INSTALL)
+nginx_remove_default_vhost: true

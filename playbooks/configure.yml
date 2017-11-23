@@ -1,5 +1,7 @@
 ---
-- include: monitoring/main.yml
-- include: monitored/main.yml
+#- include: monitoring/main.yml
+#- include: monitored/main.yml
 - include: mysql/main.yml
-- include: deploy_app/simple_deploy/main.yml
+- include: nginx/main.yml
+- include: railsapp/main.yml
+#- include: common/main.yml

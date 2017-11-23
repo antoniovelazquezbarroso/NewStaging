@@ -1,8 +1,10 @@
 ---
 # Variables for our app.
-app_version: 1.1.4  # Not in use. Allows choosing the version of the repo
-app_directory: /opt/demo-rails-app
-app_user: www-data
+app_version: mysql        # Allows choosing the version of the repo
+                          # Here it is the relevant branch name
+app_name : railsapp
+app_directory: /opt/{{ app_name }}
+app_user: deployer
 app_secrets:
   dev: fe562ec1e21eecc5af4d83f6a157a7
   test: 4408f36dd290766d2f368fdfcedf4d
@@ -10,13 +12,11 @@ app_secrets:
 app_environment:
   RAILS_ENV: production
 
-# Variables for Passenger and Nginx.
-passenger_server_name: 0.0.0.0
-passenger_app_root: /opt/demo-rails-app/public
-passenger_app_env: production
-passenger_ruby: /usr/local/bin/ruby
-
 # Variables for Ruby installation.
 ruby_install_from_source: true
 ruby_download_url: http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.0.tar.gz
 ruby_version: 2.2.0
+
+deploying_with_capistrano: false
+monitoring_with_god: false
+

@@ -1,3 +1,4 @@
 ---
 - include: provision.yml
 - include: deploy.yml
+  when: deploying_with_capistrano == false

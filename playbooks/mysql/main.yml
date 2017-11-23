@@ -5,15 +5,35 @@
   vars_files:
     - vars.yml
 
-  pre_tasks:
-    - name: Create dynamic MySQL variables.
-      set_fact:
-        mysql_users:
-          - name: mycompany_user
-            host: "{{ groups['db'][0] }}"
-            password: secret
-            priv: "*.*:SELECT"
+  pre_tasks:                                # YOU NEED TO CREATE THEM AFTER HAVING RUN provision.yml
+    - name: Create dynamic MySQL variables. # TO PROVIDE YOU WITH HOSTS IPs, NAMES, GROUPS, ETC.
+      set_fact:                             # ONCE THE INVENTORY HAS BEEN SETUP (AWS, Digital Ocean)
         mysql_replication_master: "{{ groups['db'][0] }}"
+     #  mysql_users:
+     #    - name: mycompany_user
+     #      host: "{{ groups['db'][0] }}"
+     #      password: secret
+     #      priv: "*.*:SELECT"
+# THE PRE_TASK TO CREATE MYSQL USERS IS NOT NEEDED BECAUSE /playbooks/rais/provision.yml
+# TAKES CARE OF CREATING THEM WITH THE TASK "Ensure MySQL users are present."
+
+# THE PRE_TASK TO CREATE MYSQL USERS IS NOT NEEDED 
+# if you use in your app config/database.yml the mysql root user 
+# calling through the mysql local socket /var/run/mysqld/mysqld.sock ,
+# from a local rails application (from the same host),
+# because the mysql role creates by default a full privileged root@localhost mysql user.
+
+# THIS PRE_TASK BECOMES NEEDED WHEN WE CALL MYSQL FROM REMOTE APPLICATION SERVERS
+# (BECAUSE YOU NEED SPECIFIC username@hostname USERS IN MYSQL)
+# IN OUR CASE /playbooks/rais/provision.yml TAKES CARE OF CREATING THEM
+# FOR EACH app server THAT NEEDS ACCESS TO THE DATABASE
 
   roles:
     - geerlingguy.mysql
+      # ATENCIÓN. ESTE ROLE LLEVA UN CAMBIO PARA EVITAR UN ERROR OCASIONAL AL EJECUTAR EL PLAYBOOK.
+      # DA ERRORES CUANDO HACES VAGRANT PROVISION Y YA ESTABAN CREADOS LOS USUARIOS DE MySQL
+      # PORQUE (item=(censored due to no_log)) => {"censored": "the output has been ...
+      # ESTE CAMBIO (AÑADIR ignore_errors: true EN LA TAREA "Ensure MySQL users are present.")
+      # SE HACE DIRECTAMENTE SOBRE EL ROLE.
+      # CUIDADO EN REINSTALACIONES DE ROLE REQUIREMENTS, SE PIERDE ESTE CAMBIO.
+      # VER roles/geerlingguy.mysql/tasks/user.ml, LINEA 13.

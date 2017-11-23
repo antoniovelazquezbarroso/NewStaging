@@ -1,0 +1,12 @@
+# {{ app_directory}}/config/god.rb
+
+God.watch do |w|
+  w.name = "{{ app_directory }}"
+  w.dir = "{{ app_directory }}"
+  w.behavior(:clean_pid_file)
+  w.pid_file = "{{ app_directory }}/tmp/pids/puma.pid"
+  w.start = "bundle exec puma -C {{ app_directory }}/config/puma.rb"
+  w.log = "{{ app_directory }}/log/god_puma.log"
+  w.keepalive(:memory_max => 150.megabytes,
+              :cpu_max => 50.percent)
+end

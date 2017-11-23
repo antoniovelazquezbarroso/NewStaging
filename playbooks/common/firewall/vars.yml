@@ -1,0 +1,17 @@
+---
+# THESE DEFAULTS SHOULD BE OVERWRITTEN, DEPENDING ON THE GROUP OR HOST,
+# THROUGH group-vars OR hostvars DEFINED VARIABLES
+firewall_allowed_tcp_ports:
+  - "22"   # ssh
+  - "25"   # postfix
+  - "80"   # http
+  - "443"  # https
+  - "3306" # mysql-server
+  - "9292" # puma
+  - "2812" # monit web interface
+  - "5666" # nagios-nrpe-server-port
+  - "5601" # kibana
+  - "2812" # monit
+  - "9200" # elasticsearch
+  - "5044" # logstash_listen_port_beats
+  - "5400" # filebeat

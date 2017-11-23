@@ -1,0 +1,49 @@
+---
+- hosts: all
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  handlers:
+    - name: restart monit
+      service:
+        name: monit
+        state: restarted
+
+    - name: reload monit
+      command: "monit reload"
+
+  tasks:
+    - name: Make sure monit is installed
+      apt:
+        pkg: monit
+        state: present
+
+    - name: Update the monit configuration (/etc/monit/monitrc)
+      template:
+        src: "etc_monit_monitrc.j2"
+        dest: "/etc/monit/monitrc"
+      notify:
+        - restart monit
+
+    - name: Copy the monit services config files
+      template:
+        src: "service_checks/{{item}}.j2"
+        dest: "/etc/monit/conf.d/{{item}}"
+      with_items: "{{ monit_checked_services }}"
+      notify:
+        - reload monit
+
+    - name: Monit | Determine queued messages
+      command: "ls -1 {{monit_eventqueue_directory}}/"
+      register: monit_queued_messages
+      when: not monit_email_enable or not monit_eventqueue_enable
+      changed_when: False
+
+    - name: Monit | Remove queued messages
+      file:
+        path: "{{monit_eventqueue_directory}}/{{item}}"
+        state: absent
+      when: not monit_email_enable or not monit_eventqueue_enable
+      with_items: monit_queued_messages.stdout_lines

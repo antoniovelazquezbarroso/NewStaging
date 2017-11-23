@@ -1,0 +1,4 @@
+#puma
+check process puma with pidfile /opt/railsapp/tmp/pids/puma.pid
+  start program = "/bin/su - root -c 'cd /opt/railsapp && bundle exec puma -C config/puma.rb '" with timeout 50 seconds
+  stop program = "/bin/su - root -c 'kill -s SIGTERM `cat /opt/railsapp/tmp/pids/puma.pid`'"

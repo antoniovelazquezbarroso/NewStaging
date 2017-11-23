@@ -1,0 +1,31 @@
+upstream {{ app_name }} {
+# ip-hash;     # commented out for testing
+  server {{ groups['app'][0] }}:9292;
+  server {{ groups['app'][1] }}:9292;
+#  server unix://{{ app_directory }}/tmp/sockets/puma.sock;
+}
+
+server {
+  listen 80 default;
+#  server_name {{ app_name }}_url.com; # change to match your URL
+  root {{ app_directory }}/public; # I assume your app is located at that location
+
+  location / {
+    proxy_pass http://{{ app_name }}; # match the name of upstream directive which is defined above
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+  location ~* ^/assets/ {
+    # Per RFC2616 - 1 year maximum expiry
+    expires 1y;
+    add_header Cache-Control public;
+
+    # Some browsers still send conditional-GET requests if there's a
+    # Last-Modified header or an ETag header even if they haven't
+    # reached the expiry date sent in the Expires header.
+    add_header Last-Modified "";
+    add_header ETag "";
+    break;
+  }
+}

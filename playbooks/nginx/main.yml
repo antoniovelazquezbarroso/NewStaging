@@ -1,0 +1,55 @@
+---
+- hosts: web
+  become: yes
+# ================================================
+#  INSTALLING NGINX THROUGH ROLE (WITHOUT ANY CONFIGURATION)
+#  VARS ARE ONLY NEEDED IF INSTALLING NGINX THROUGH ROLE
+#  vars_files:
+#    - vars.yml
+
+#  roles:
+#    - geerlingguy.nginx
+#
+#  NOTHING ELSE NEEDED IF USING THE ROLE
+# ================================================
+
+# ================================================
+#  ALTERNATIVE INSTALLATION (MAKES UNNECCESARY THE NGINX ROLE)
+#  INSTALLING NGINX DIRECTLY WITHOUT USING THE ROLE
+#  ADDS CONFIGURATION FOR NGINX JSON FORMAT ACCESS LOGS
+#  YOU CAN ADD ADDITIONAL CONFIG (I.E. VHOSTS, UPSTREAMS, etc.)
+
+  handlers:
+  - name: restart nginx
+    service: name=nginx state=restarted
+
+  tasks:
+  - name: package update (apt)
+    apt: update_cache=yes cache_valid_time=3600
+
+  - name: Install nginx 
+    action: apt pkg=nginx state=present
+    notify: restart nginx
+
+  - name: Copy nginx main config file (set JSON format logging).
+    copy:
+      src: files/nginx.conf
+      dest: /etc/nginx/nginx.conf
+    notify: restart nginx
+
+  - name: Remove nginx default site
+    file: >
+      dest=/etc/nginx/sites-available/default
+      state=absent
+    notify: restart nginx
+
+#  - name: Copy nginx vhost config file for myapp
+#    copy: src=files/myapp.conf dest=/etc/nginx/sites-available/myapp.conf
+
+#  - name: Enable configuration for myapp
+#    file: >
+#      dest=/etc/nginx/sites-enabled/myapp.conf
+#      src=/etc/nginx/sites-available/myapp.conf
+#      state=link
+#    notify: restart nginx
+# ===================================================

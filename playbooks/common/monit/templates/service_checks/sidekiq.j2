@@ -1,0 +1,4 @@
+#sidekiq
+check process sidekiq with pidfile "/var/www/rails-webapp/tmp/pids/sidekiq.pid"
+  start program = "/etc/init.d/sidekiq start"
+  stop program = "/etc/init.d/sidekiq stop"

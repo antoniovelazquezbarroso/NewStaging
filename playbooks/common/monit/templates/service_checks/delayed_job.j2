@@ -1,0 +1,4 @@
+#delayed_job
+check process delayed_job with pidfile /var/www/rails-webapp/tmp/pids/delayed_job.pid
+  start program = "/bin/su - webapp -c 'cd /var/www/rails-webapp/; RAILS_ENV=production bin/delayed_job start'"
+  stop program = "/bin/su - webapp -c 'cd /var/www/rails-webapp/; RAILS_ENV=production bin/delayed_job stop'"

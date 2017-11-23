@@ -1,0 +1,93 @@
+---
+- hosts: app
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - geerlingguy.git
+    - geerlingguy.nodejs
+    - geerlingguy.ruby
+
+  tasks:
+#    - name: Install app dependencies for sqlite.
+#      apt: "name={{ item }} state=present"
+#      with_items:
+#        - libsqlite3-dev
+#        - libreadline-dev
+
+    - name: Install app dependencies for mysql.
+      apt: "name={{ item }} state=present"
+      with_items:
+        - mysql-client
+        - libmysqlclient-dev
+
+    - name: Add or update deploy user
+      user:
+        name: "{{ app_user }}"
+        shell: /bin/bash
+        createhome: yes
+
+    - name: Set authorized key from file (for deploy user)
+      authorized_key:
+        user: "{{ app_user }}"
+        state: present
+        key: "{{ lookup('file', '/Users/antonio/.ssh/id_rsa.pub') }}" #  Mac
+  #      key: "{{ lookup('file', '/home/antonio/.ssh/id_rsa.pub') }}" #  Ubuntu
+
+#    Deploy user needs to create links for nginx upstream configuration (Capistrano)
+    - name: Ensure deploy user permissions over folders /etc/nginx/sites
+      file:
+        path: "{{ item }}"
+        state: directory
+        group: "{{ app_user }}"
+        mode: 0775
+      with_items:
+        - /etc/nginx/sites-available
+        - /etc/nginx/sites-enabled
+      when: deploying_with_capistrano == true
+
+#   To allow the deploy user to restart Nginx (EXCESIVO, CORREGIR) (Capistrano) 
+#   Bastaría con darle derechos sobre "/etc/init.d/nginx restart"
+#   Pero puede crear conflicto con playbook set_god.yml (ver el final)
+    - name: Add full sudo group rights for deploy user
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: "{{ app_user }}"
+        line: "{{ app_user }} ALL=(ALL) NOPASSWD: ALL"
+        state: present
+      when: deploying_with_capistrano == true
+
+    - name: Ensure app directory exists and is writeable.
+      file:
+        path: "{{ app_directory }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: 0755
+
+# SETUP APP PRODUCTION DATABASE IS DONE NOW 
+# IN THE mysql PLAYBOOK vars.yml FILE, BECAUSE
+# THAT INCLUDES THE DATABASE FOR REPLICATION
+#    - name: Setup app production database if not already exists
+#      mysql_db:
+#        name: "{{ app_name }}_production"
+#        collation: utf8_general_ci
+#        encoding: utf8
+#        state: present
+#      when: inventory_hostname == groups.rails[0] # ONLY ONCE PER GROUP
+#      delegate_to: "{{ groups['db'][0] }}"
+
+
+# SETTING MYSQL USERS COULD ALSO BE DONE AS A pre-task
+# AT THE mysql/main.yml PLAYBOOK. SEE THE COMMENTS THERE
+    - name: Ensure MySQL users are present.
+      mysql_user:
+        name: "{{ app_name}}"
+        host: "{{ inventory_hostname }}" # FOR EACH MEMBER OF THE RAILSAPP GROUP
+        password: "{{ app_name}}"
+        priv: "{{ app_name }}_production.*:ALL"
+        state: present
+      no_log: true
+      delegate_to: "{{ groups['db'][0] }}"

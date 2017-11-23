@@ -5,35 +5,32 @@
   vars_files:
     - vars.yml
 
-  roles:
-    - geerlingguy.passenger  # to use its handler for restarting nginx
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
+      delegate_to: "{{ groups['web'][0] }}"
 
   tasks:
     - name: Ensure demo application is at correct release.
       git:
         repo: https://github.com/antoniovelazquezbarroso/myticketee_mysql.git
-        version: mysql  # To choose version repository to checkout
-                        # (can be a branch name, tag name or SHA-1 hash)
-                        # defaults to the literal string HEAD 
+        version: "{{ app_version }}" # To choose version repository to checkout
+                                     # (can be a branch name, tag name or SHA-1 hash)
+                                     # defaults to the literal string HEAD 
         dest: "{{ app_directory }}"
         accept_hostkey: true
         force: yes
       register: app_updated
       notify: restart nginx
 
-    - name: Ensure secrets file is present.
-      template:
-        src: templates/secrets.yml.j2
-        dest: "{{ app_directory }}/config/secrets.yml"
-        owner: "{{ app_user }}"
-        group: "{{ app_user }}"
-        mode: 0664
-      notify: restart nginx
-      # Fails frequently on Ansible 2.2.0.0 because of git.py module error
-      # Just retrying fixes the problem
-      # See https://github.com/ansible/ansible-modules-core/issues/5504
-      # and https://github.com/ansible/ansible-modules-core/pull/5505
-      
+    # THESE INCLUDED TASKS SET RAILS SECRETS, JSON LOGS AND database.yml CONFIG
+    - include: set_rails.yml
+    # THESE INCLUDED TASKS SET THE NGINX-UPSTREAM AND THE PUMA GEM AND CONFIG FILE
+    - include: set_puma.yml
+    # THESE INCLUDED TASKS SET GOD GEM, CONFIG AND UPSTART FILES
+    - include: set_god.yml
+      when: monitoring_with_god
+
     - name: Install required dependencies with bundler.
       shell: "bundle install --path vendor/bundle chdir={{ app_directory }}"
       when: app_updated.changed == true
@@ -64,3 +61,15 @@
         group: "{{ app_user }}"
         recurse: yes
       notify: restart nginx
+
+    - name: Start Puma server.
+      become: yes
+      shell: "bundle exec puma -C {{ app_directory }}/config/puma.rb chdir={{ app_directory }}"
+      notify: restart nginx
+      when: monitoring_with_god == false
+
+    - name: Start Puma Server by starting its monitoring by God (which in turn keeps alive Puma).
+      become: yes
+      shell: "bundle exec god -c {{ app_directory }}/config/god.rb --log {{ app_directory }}/log/god_main.log chdir={{ app_directory }}"
+      when: monitoring_with_god
+

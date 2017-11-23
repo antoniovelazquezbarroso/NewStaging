@@ -1,9 +1,37 @@
 ---
+# LOGGING =========================================================
+# MySql general log
+mysql_log: /var/log/mysql/mysql-general.log
+# MySql error log
+mysql_log_error: /var/log/mysql/mysql-error.log
+# MySql slow query log settings.
+mysql_slow_query_log_file: /var/log/mysql/mysql-slow.log
+mysql_slow_query_log_enabled: yes
+mysql_slow_query_time: "2"
+# =================================================================
+
+# REPLICATION =====================================================
 mysql_replication_user: {name: 'replication', password: 'secret'}
+# You need define this if you want to use replication
+
+# 'mysql_replication_role' and 'mysql_server_id' defined in inventory file
+#   You can also define them with .yml files named after each host
+#   in the hosts_vars folder placed alongside the inventory file
+
+# 'mysql_replication_master' is defined in the main.yml playbook,
+#   as a pre-task, by dinamically setting a fact 
+#   (the inventory data : hostnames, groups, IPs, etc)
+#   once the playbook has started and after having run
+#   the provision.yml playbook, that provides dynamic inventory data
+#   for AWS or Digital Ocean
+# =================================================================
+
+# DATABASES TO CREATE (AND SETUP FOR REPLICATION) =================
 mysql_databases:
   - name: railsapp_production
     collation: utf8_general_ci
     encoding: utf8
-# Variables to config mysql replication and mysql logging
-# are defined in .yml files named after each host
-# in the hosts_vars folder placed alongside the inventory file
+# You need to define databases here (before running the role)
+# If you want them included for replication
+# See the mysql role README
+# =================================================================
