@@ -15,8 +15,8 @@
 - src: geerlingguy.git
 - src: geerlingguy.nodejs
 - src: geerlingguy.ruby
-#- src: geerlingguy.ntp
-#- src: geerlingguy.security
-#- src: geerlingguy.firewall
-#- src: geerlingguy.backup
-#- src: geerlingguy.postfix
+- src: geerlingguy.ntp
+- src: geerlingguy.security
+- src: geerlingguy.firewall
+- src: geerlingguy.backup
+- src: geerlingguy.postfix

@@ -11,19 +11,24 @@ mysql_slow_query_time: "2"
 # =================================================================
 
 # REPLICATION =====================================================
+# YOU NEED UNCOMMENT THIS (SET THE mysql_replication_user)
+# IF YOU WANT TO USE REPLICATION
 mysql_replication_user: {name: 'replication', password: 'secret'}
-# You need define this if you want to use replication
 
-# 'mysql_replication_role' and 'mysql_server_id' defined in inventory file
-#   You can also define them with .yml files named after each host
-#   in the hosts_vars folder placed alongside the inventory file
-
-# 'mysql_replication_master' is defined in the main.yml playbook,
-#   as a pre-task, by dinamically setting a fact 
-#   (the inventory data : hostnames, groups, IPs, etc)
-#   once the playbook has started and after having run
-#   the provision.yml playbook, that provides dynamic inventory data
-#   for AWS or Digital Ocean
+# You will aldo need to define the following variables
+# if you want to use replication
+#
+#    'mysql_replication_role'(master or slave),and
+#    'mysql_server_id'(1 o 2) get defined in the inventory file.
+#     You can also define them with .yml files named after each host
+#     in the hosts_vars folder placed alongside the inventory file
+#
+#    'mysql_replication_master' is defined in the main.yml playbook,
+#     as a pre-task, by dinamically setting a fact 
+#     (the inventory data : hostnames, groups, IPs, etc)
+#     once the playbook has started and after having run
+#     the provision.yml playbook, that provides dynamic inventory data
+#     for provisioning hosts from AWS or Digital Ocean
 # =================================================================
 
 # DATABASES TO CREATE (AND SETUP FOR REPLICATION) =================
@@ -35,3 +40,5 @@ mysql_databases:
 # If you want them included for replication
 # See the mysql role README
 # =================================================================
+
+
